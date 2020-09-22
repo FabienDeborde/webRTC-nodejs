@@ -1,4 +1,9 @@
 {
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020, // Allows for the parsing of modern ECMAScript features
+    "sourceType": "module" // Allows for the use of imports
+  },
   "env": {
     "node": true,
     "es6": true
@@ -6,8 +11,14 @@
   "rules": {
     "no-unused-vars": "off",
     "no-undef": 2,
-    "camelcase": 0
+    "camelcase": 0,
+    "@typescript-eslint/no-explicit-any": "off"
   },
-  "extends": ["standard"],
-  "plugins": []
+  "extends": [
+    "standard",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint"
+  ]
 }
