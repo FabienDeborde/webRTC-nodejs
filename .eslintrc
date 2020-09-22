@@ -1,0 +1,13 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "no-undef": 2,
+    "camelcase": 0
+  },
+  "extends": ["standard"],
+  "plugins": []
+}
