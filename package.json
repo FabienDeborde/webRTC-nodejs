@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "start": "nodemon",
     "build": "tsc",
-    "serve": "node dist/index.js",
+    "serve": "yarn build && node dist/index.js",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "lint-full": "eslint '*/**/*.{js,ts,tsx}'"
   },
