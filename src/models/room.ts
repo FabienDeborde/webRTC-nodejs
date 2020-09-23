@@ -1,5 +1,15 @@
 import mongoose from '../database'
-const schema = new mongoose.Schema(
+
+export type RoomDocument = mongoose.Document & {
+  name?: string;
+  password?: string;
+  currentActiveUsers?: number;
+  isActive?: boolean;
+  lastJoinedAt?: Date;
+  lastLeftAt?: Date;
+}
+
+export const RoomSchema = new mongoose.Schema(
   {
     name: {
       desc: "The room's name.",
@@ -21,8 +31,14 @@ const schema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
-    lastJoinedAt: Date,
-    lastLeftAt: Date
+    lastJoinedAt: {
+      type: Date,
+      default: null
+    },
+    lastLeftAt: {
+      type: Date,
+      default: null
+    }
   },
   {
     strict: true,
@@ -31,4 +47,4 @@ const schema = new mongoose.Schema(
   }
 )
 
-export default mongoose.model('Rooms', schema)
+export default mongoose.model<RoomDocument>('Room', RoomSchema, 'rooms')
