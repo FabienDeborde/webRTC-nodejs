@@ -7,6 +7,8 @@ import compression from 'compression'
 import { ExpressPeerServer } from 'peer'
 import http from 'http'
 // import socketIo from 'socket.io'
+import { errorMiddleware } from './middlewares/errors'
+import { ipMiddleware } from './middlewares/ip'
 
 import roomRoutes from './routes/room'
 
@@ -25,6 +27,8 @@ app.use(compression())
 app.use(cors())
 app.use(helmet())
 app.use(bodyParser.json())
+app.use(errorMiddleware)
+app.use(ipMiddleware)
 
 app.use('/rooms', roomRoutes)
 app.use('/peer', peerServer)
