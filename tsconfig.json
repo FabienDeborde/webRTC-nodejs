@@ -11,10 +11,18 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "dist",
+    "paths": {
+      "*": [
+          "node_modules/*",
+          "src/typings/*"
+      ]
+    },
     "resolveJsonModule": true,
     "removeComments": true,
     "skipLibCheck": true,
     "sourceMap": true,
+    "strictNullChecks": false,
+    "strict": false,
     "target": "es5"
   },
   "include": [
