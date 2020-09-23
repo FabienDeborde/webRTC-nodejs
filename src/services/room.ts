@@ -25,7 +25,6 @@ export const findOne = (id: string): DocumentQuery<Document, Document, any> => {
 }
 
 export const deleteOne = (id: string): DocumentQuery<Document, Document, any> => {
-  console.log('id', id)
   return Room.findByIdAndRemove(id)
 }
 
