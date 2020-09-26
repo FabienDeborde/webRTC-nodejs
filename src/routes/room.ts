@@ -1,6 +1,7 @@
 import * as express from 'express'
 import { RoomDocument } from '../models/room'
 import * as Room from '../services/room'
+import * as Email from '../services/email'
 import * as BlockUser from '../services/blockUser'
 import { decrypt, encrypt, compareHash } from '../utils/encryption'
 import { BlockedUserDocument } from '../models/blockedUser'
@@ -21,7 +22,6 @@ router.get('/', async (req, res) => {
 
 router.post('/access', async (req, res) => {
   try {
-    console.log('user ip', req.clientIP, req.ip)
     const user = await BlockUser.findOne(req.clientIP) as BlockedUserDocument
     if (user && user.banned) return res.unauthorized()
   } catch (error) {
@@ -53,7 +53,6 @@ router.post('/', async (req, res) => {
   try {
     const { name, password } = req.body
     const response = await Room.create({ name, password })
-    console.log(response)
     // Encrypt then encode the room ID (prevent symbols when passing in URL)
     const id: string = encodeURIComponent(encrypt(response && response.id))
     return res.send({
@@ -63,6 +62,23 @@ router.post('/', async (req, res) => {
     })
   } catch (error) {
     return res.internalServerError('An error occured while creating the room', error)
+  }
+})
+
+router.post('/invite', async (req, res) => {
+  try {
+    const { id, emails } = req.body
+    if (!id) return res.badRequest('No room specified.')
+    const room = await Room.findOne(decrypt(decodeURIComponent(id))) as RoomDocument
+    if (!room) {
+      return res.notFound('Couldn\'t find a room with this ID.')
+    }
+
+    const origin = req.get('origin')
+    await Email.sendInvitationEmail({ roomID: `${origin}/room/${id}`, to: emails })
+    res.send()
+  } catch (error) {
+    return res.internalServerError('An error occured while sending invitation email', error)
   }
 })
 
@@ -79,8 +95,6 @@ router.delete('/', async (req, res) => {
 router.delete('/inactive', async (req, res) => {
   try {
     const response = await Room.deleteInactive()
-    console.log(response)
-
     return res.send({ success: true, deletedCount: response.deletedCount })
   } catch (error) {
     return res.internalServerError('An error occured while deleting the room', error)
