@@ -13,6 +13,10 @@ import { ipMiddleware } from './middlewares/ip'
 import roomRoutes from './routes/room'
 
 const port = process.env.PORT || 4001
+const whitelist = ['https://webrtc-sample.netlify.app/']
+if (process.env.NODE_ENV === 'development') {
+  whitelist.push('http://localhost:3000')
+}
 
 const app = express()
 const server = new http.Server(app)
@@ -24,7 +28,9 @@ const peerServer = ExpressPeerServer(server, {
 })
 
 app.use(compression())
-app.use(cors())
+app.use(cors({
+  origin: whitelist
+}))
 app.use(helmet())
 app.use(bodyParser.json())
 app.use(errorMiddleware)
