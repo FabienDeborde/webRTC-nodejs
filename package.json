@@ -11,6 +11,7 @@
     "lint-full": "eslint '*/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.2.6",
     "@supercharge/request-ip": "^1.1.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -24,7 +25,6 @@
     "mongoose": "^5.10.6",
     "peer": "^0.5.3",
     "socket.io": "^2.3.0",
-    "uuid": "^8.3.0",
     "typescript": "^4.0.3"
   },
   "devDependencies": {
