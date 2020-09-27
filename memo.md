@@ -24,3 +24,10 @@ rtcDbUser
 
 
 Setup Sendgrid to use private domain
+
+
+if room is verified
+ - create / join socket room
+ - on join broadcast user has join
+ - create a new peer / join a peer
+ - call each other peer
