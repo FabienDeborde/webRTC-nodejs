@@ -23,6 +23,9 @@ const corsOptions = {
   origin: whitelist
 }
 
+console.log('NODE_ENV', process.env.NODE_ENV)
+console.log('whitelist', whitelist)
+
 const app = express()
 const server = new http.Server(app)
 const io = socketIo(server, { path: '/socket' })
