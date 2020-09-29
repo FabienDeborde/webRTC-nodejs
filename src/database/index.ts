@@ -4,7 +4,9 @@ const connectionString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env
 
 mongoose.connect(connectionString, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true
 })
 
 mongoose.connection.on('error', err => {

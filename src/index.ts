@@ -6,18 +6,25 @@ import helmet from 'helmet'
 import compression from 'compression'
 import { ExpressPeerServer } from 'peer'
 import http from 'http'
-// import socketIo from 'socket.io'
+import socketIo from 'socket.io'
+import { errorMiddleware } from './middlewares/errors'
+import { ipMiddleware } from './middlewares/ip'
+import chalk from 'chalk'
 
 import roomRoutes from './routes/room'
+import { decrypt } from './utils/encryption'
 
 const port = process.env.PORT || 4001
+const whitelist = ['https://webrtc-sample.netlify.app/']
+const corsOptions = process.env.NODE_ENV === 'development' ? null : {
+  origin: whitelist
+}
 
 const app = express()
 const server = new http.Server(app)
-// const io = socketIo(server, { path: '/rooms' })
+const io = socketIo(server, { path: '/socket' })
 
 const peerServer = ExpressPeerServer(server, {
-  path: '/broker',
   allow_discovery: true
 })
 
@@ -25,6 +32,8 @@ app.use(compression())
 app.use(cors())
 app.use(helmet())
 app.use(bodyParser.json())
+app.use(errorMiddleware)
+app.use(ipMiddleware)
 
 app.use('/rooms', roomRoutes)
 app.use('/peer', peerServer)
@@ -43,13 +52,21 @@ app.use('/peer', peerServer)
 //   })
 // })
 
-// io.on('connection', socket => {
-//   socket.on('join-room', (roomId, userId) => {
-//     console.log('room id', roomId)
-//     console.log('user id', userId)
-//     socket.join(roomId)
-//     socket.to(roomId).broadcast.emit('user-connected', userId)
-//   })
-// })
+io.on('connection', socket => {
+  socket.on('join-room', (roomId, userId) => {
+    console.log(`${chalk.black.bgGreen(' New Socket Connection ')} user ${userId} joined the room ${decrypt(decodeURIComponent(roomId))}`)
+
+    socket.join(roomId)
+    socket.to(roomId).broadcast.emit('user-connected', userId)
+
+    socket.on('disconnect', () => {
+      socket.to(roomId).broadcast.emit('user-disconnected', userId)
+    })
+  })
+})
+
+peerServer.on('connection', client => {
+  console.log(`${chalk.black.bgYellow(' New Peer Connection ')} user ${client.getId()} connected to peer`)
+})
 
 server.listen(port, () => console.log(`Listening on port ${port}`))
