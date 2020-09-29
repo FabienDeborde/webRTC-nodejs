@@ -27,12 +27,6 @@ console.log('NODE_ENV', process.env.NODE_ENV)
 console.log('whitelist', whitelist)
 
 const app = express()
-const server = new http.Server(app)
-const io = socketIo(server, { path: '/socket' })
-
-const peerServer = ExpressPeerServer(server, {
-  allow_discovery: true
-})
 
 app.use(compression())
 app.use(cors())
@@ -40,6 +34,12 @@ app.use(helmet())
 app.use(bodyParser.json())
 app.use(errorMiddleware)
 app.use(ipMiddleware)
+
+const server = new http.Server(app)
+const io = socketIo(server, { path: '/socket' })
+const peerServer = ExpressPeerServer(server, {
+  allow_discovery: true
+})
 
 app.use('/rooms', roomRoutes)
 app.use('/peer', peerServer)
