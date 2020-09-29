@@ -15,8 +15,11 @@ import roomRoutes from './routes/room'
 import { decrypt } from './utils/encryption'
 
 const port = process.env.PORT || 4001
-const whitelist = ['https://webrtc-sample.netlify.app/']
-const corsOptions = process.env.NODE_ENV === 'development' ? null : {
+const whitelist = [
+  'https://webrtc-sample.netlify.app/',
+  process.env.NODE_ENV === 'development' && 'http://localhost'
+]
+const corsOptions = {
   origin: whitelist
 }
 
