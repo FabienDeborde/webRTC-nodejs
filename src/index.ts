@@ -14,6 +14,8 @@ import chalk from 'chalk'
 import roomRoutes from './routes/room'
 import { decrypt } from './utils/encryption'
 
+import * as Room from './services/room'
+
 const port = process.env.PORT || 4001
 // const whitelist = [
 //   'https://webrtc-sample.netlify.app/',
@@ -38,22 +40,23 @@ app.use(ipMiddleware)
 const server = new http.Server(app)
 const io = socketIo(server, { path: '/socket' })
 
-const peerServer = ExpressPeerServer(server, {
-  allow_discovery: true
-})
+const peerServer = ExpressPeerServer(server, {})
 
 app.use('/rooms', roomRoutes)
 app.use('/peer', peerServer)
 
 io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
-    console.log(`${chalk.black.bgGreen(' New Socket Connection ')} user ${userId} joined the room ${decrypt(decodeURIComponent(roomId))}`)
+  socket.on('join-room', async (roomId, userId) => {
+    const roomID = decrypt(decodeURIComponent(roomId))
+    console.log(`${chalk.black.bgGreen(' New Socket Connection ')} user ${userId} joined the room ${roomID}`)
 
-    socket.join(roomId)
-    socket.to(roomId).broadcast.emit('user-connected', userId)
+    socket.join(roomID)
+    socket.to(roomID).broadcast.emit('user-connected', userId)
+    await Room.join(roomID)
 
-    socket.on('disconnect', () => {
-      socket.to(roomId).broadcast.emit('user-disconnected', userId)
+    socket.on('disconnect', async () => {
+      socket.to(roomID).broadcast.emit('user-disconnected', userId)
+      await Room.leave(roomID)
     })
   })
 })

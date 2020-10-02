@@ -7,8 +7,8 @@
     "start": "nodemon",
     "build": "tsc",
     "serve": "yarn build && node dist/index.js",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "lint-full": "eslint '*/**/*.{js,ts,tsx}'"
+    "lint": "eslint '*/**/*.{js,ts,tsx}'",
+    "lint-fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.2.6",
