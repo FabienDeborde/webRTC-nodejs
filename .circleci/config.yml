@@ -1,0 +1,20 @@
+jobs:
+  lint:
+    executor:
+      name: node/default
+      tag: '12.16'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: yarn run lint
+          name: Run YARN lint
+
+orbs:
+  node: circleci/node@4.0.0
+version: 2.1
+workflows:
+  app-tests:
+    jobs:
+      - lint
