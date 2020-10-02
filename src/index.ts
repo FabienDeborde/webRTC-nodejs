@@ -15,24 +15,18 @@ import roomRoutes from './routes/room'
 import { decrypt } from './utils/encryption'
 
 const port = process.env.PORT || 4001
-const whitelist = [
-  'https://webrtc-sample.netlify.app/',
-  process.env.NODE_ENV === 'development' && 'http://localhost'
-]
-const corsOptions = {
-  origin: whitelist
-}
+// const whitelist = [
+//   'https://webrtc-sample.netlify.app/',
+//   process.env.NODE_ENV === 'development' && 'http://localhost'
+// ]
+// const corsOptions = {
+//   origin: whitelist
+// }
 
 console.log('NODE_ENV', process.env.NODE_ENV)
-console.log('whitelist', whitelist)
+// console.log('whitelist', whitelist)
 
 const app = express()
-const server = new http.Server(app)
-const io = socketIo(server, { path: '/socket' })
-
-const peerServer = ExpressPeerServer(server, {
-  allow_discovery: true
-})
 
 app.use(compression())
 app.use(cors())
@@ -41,22 +35,15 @@ app.use(bodyParser.json())
 app.use(errorMiddleware)
 app.use(ipMiddleware)
 
+const server = new http.Server(app)
+const io = socketIo(server, { path: '/socket' })
+
+const peerServer = ExpressPeerServer(server, {
+  allow_discovery: true
+})
+
 app.use('/rooms', roomRoutes)
 app.use('/peer', peerServer)
-
-// const getApiAndEmit = socket => {
-//   const response = new Date()
-//   // Emitting a new message. Will be consumed by the client
-//   socket.emit('FromAPI', response)
-// }
-
-// io.on('connection', (socket) => {
-//   console.log('New client connected', socket)
-//   socket.emit('FromAPI', 'hello there')
-//   socket.on('disconnect', () => {
-//     console.log('Client disconnected')
-//   })
-// })
 
 io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {

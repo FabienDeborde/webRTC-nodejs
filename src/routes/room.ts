@@ -32,6 +32,8 @@ router.post('/access', async (req, res) => {
   if (!id) return res.badRequest('No room specified.')
   try {
     const room = await Room.findOne(decrypt(decodeURIComponent(id))) as RoomDocument
+    console.log('room', room)
+
     const roomID: string = encodeURIComponent(encrypt(room && room.id))
     if (room.password) {
       if (!password) return res.unauthorized('You do not have access to this room. Please contact your administrator for further information.')
