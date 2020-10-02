@@ -39,3 +39,24 @@ export const findAll = (): DocumentQuery<RoomDocument[], RoomDocument, any> => {
   return Room.find()
     .sort({ name: -1 })
 }
+
+export const join = (id: string): DocumentQuery<Document, Document, any> => {
+  return Room.findById(id, function (err, doc) {
+    if (err) console.log('error', err)
+    doc.isActive = true
+    doc.lastJoinedAt = new Date()
+    doc.currentActiveUsers += 1
+    doc.save()
+  })
+}
+
+export const leave = (id: string): DocumentQuery<Document, Document, any> => {
+  return Room.findById(id, function (err, doc) {
+    if (err) console.log('error', err)
+    const isActive = doc.currentActiveUsers > 1
+    doc.isActive = isActive
+    doc.lastLeftAt = new Date()
+    doc.currentActiveUsers = doc.currentActiveUsers < 1 ? 0 : doc.currentActiveUsers - 1
+    doc.save()
+  })
+}
